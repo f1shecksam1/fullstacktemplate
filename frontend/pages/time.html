@@ -4,13 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Time Endpoint</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="../styles.css" />
   </head>
   <body>
     <main class="container">
       <header class="page-header">
+        <span class="eyebrow">Endpoint Flow</span>
         <h1>Time Endpoint Page</h1>
-        <p>GET /api/v1/time cagrisi bu sayfada ayrica test edilir.</p>
+        <p>Read current server time from <code>GET /api/v1/time</code> and verify synchronization quickly.</p>
       </header>
 
       <nav class="nav">
@@ -22,23 +29,33 @@
       </nav>
 
       <section class="card controls">
+        <h2>Step 1 — Configure and Run</h2>
+        <p class="helper-text">Use this when verifying environment consistency across client and backend.</p>
         <label class="field" for="api-base">
           API Base URL
           <input id="api-base" type="text" value="http://127.0.0.1:8000" />
         </label>
 
+        <details class="advanced-panel">
+          <summary>Troubleshooting hint</summary>
+          <p>If returned time looks stale, re-check API base and confirm backend process status.</p>
+        </details>
+
         <button id="btn-run-time" type="button">Run GET /api/v1/time</button>
       </section>
 
-      <section class="card">
-        <h2>Sent Payload</h2>
-        <pre id="request-payload">No request sent yet.</pre>
-      </section>
+      <section class="results-grid" aria-live="polite">
+        <section class="card">
+          <h2>Step 2 — Sent Payload</h2>
+          <pre id="request-payload">No request sent yet.</pre>
+        </section>
 
-      <section class="card">
-        <h2>Response</h2>
-        <p id="operation-summary" class="operation-summary">No operation yet.</p>
-        <pre id="result">Click the button to request time endpoint.</pre>
+        <section class="card">
+          <h2>Step 3 — Response</h2>
+          <p id="request-status" class="request-status" data-tone="neutral">Ready to run time request.</p>
+          <p id="operation-summary" class="operation-summary">No operation yet.</p>
+          <pre id="result">Click the button to request time endpoint.</pre>
+        </section>
       </section>
     </main>
 

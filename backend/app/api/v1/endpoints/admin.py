@@ -24,7 +24,11 @@ def _request_project_shutdown() -> None:
 
     creationflags = 0
     if sys.platform == "win32":
-        creationflags = subprocess.CREATE_NO_WINDOW
+        creationflags = (
+            subprocess.CREATE_NO_WINDOW
+            | subprocess.CREATE_NEW_PROCESS_GROUP
+            | getattr(subprocess, "DETACHED_PROCESS", 0)
+        )
 
     subprocess.Popen(
         [sys.executable, str(script_path)],

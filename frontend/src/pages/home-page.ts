@@ -4,6 +4,7 @@ import {
   logPageViewed,
   type PageSetupOptions,
   requestJson,
+  setRequestStatus,
   setupNavigationLogging,
 } from "./shared.js";
 
@@ -15,10 +16,12 @@ export async function mountHomePage(options?: PageSetupOptions): Promise<void> {
 
   setupNavigationLogging(context);
   await logPageViewed(context, "home");
+  setRequestStatus(context, "Ready to continue.", "neutral");
 
   const stopButton = context.documentRef.getElementById("btn-stop-project");
   if (stopButton != null) {
     stopButton.addEventListener("click", () => {
+      setRequestStatus(context, "Stopping services...", "running");
       void context.logger.log({
         level: "warning",
         event: "ui.button.clicked",

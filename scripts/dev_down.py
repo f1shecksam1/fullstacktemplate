@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
 import signal
 import subprocess
 import sys
 import time
+from pathlib import Path
 from typing import Final
 
 PROJECT_ROOT: Final[Path] = Path(__file__).resolve().parents[1]
@@ -26,6 +26,19 @@ def _read_pid(path: Path) -> int | None:
 
 
 def _is_running(pid: int) -> bool:
+    if pid <= 0:
+        return False
+
+    if sys.platform == "win32":
+        result = subprocess.run(
+            ["tasklist", "/FI", f"PID eq {pid}"],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        output = (result.stdout or "").upper()
+        return str(pid) in output and "NO TASKS ARE RUNNING" not in output
+
     try:
         os.kill(pid, 0)
     except Exception:
@@ -35,12 +48,39 @@ def _is_running(pid: int) -> bool:
 
 def _terminate_process(pid: int) -> None:
     if sys.platform == "win32":
-        subprocess.run(
+        commands = (
+            ["taskkill", "/PID", str(pid), "/F"],
             ["taskkill", "/PID", str(pid), "/T", "/F"],
-            check=False,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+            [
+                "powershell",
+                "-NoProfile",
+                "-Command",
+                f"Stop-Process -Id {pid} -Force -ErrorAction SilentlyContinue",
+            ],
         )
+
+        for command in commands:
+            try:
+                completed = subprocess.run(
+                    command,
+                    check=False,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                    timeout=2,
+                )
+            except subprocess.TimeoutExpired:
+                continue
+
+            if completed.returncode == 0 and not _is_running(pid):
+                return
+
+        # Best-effort fallback for cases where command return codes are unreliable.
+        deadline = time.time() + 2
+        while time.time() < deadline:
+            if not _is_running(pid):
+                return
+            time.sleep(0.1)
+
         return
 
     os.kill(pid, signal.SIGTERM)
@@ -79,7 +119,9 @@ def _listening_pids(port: int) -> set[int]:
             continue
         maybe_pid = parts[-1]
         if maybe_pid.isdigit():
-            pids.add(int(maybe_pid))
+            pid = int(maybe_pid)
+            if _is_running(pid):
+                pids.add(pid)
 
     return pids
 
@@ -90,8 +132,8 @@ def _stop_service_by_port(service_name: str, port: int) -> None:
         return
 
     for pid in sorted(pids):
-        if _is_running(pid):
-            _terminate_process(pid)
+        _terminate_process(pid)
+        if not _is_running(pid):
             print(f"Stopped {service_name} by port {port} (pid={pid}).")
 
 
@@ -101,21 +143,24 @@ def _stop_service(service_name: str) -> None:
     if pid is None:
         return
 
-    if _is_running(pid):
-        _terminate_process(pid)
-        print(f"Stopped {service_name} (pid={pid}).")
-    else:
+    if not _is_running(pid):
         print(
             f"{service_name} pid file existed but process was not running (pid={pid})."
         )
+    else:
+        _terminate_process(pid)
+        if not _is_running(pid):
+            print(f"Stopped {service_name} (pid={pid}).")
+        else:
+            print(f"Could not stop {service_name} cleanly (pid={pid}).")
 
     pid_file.unlink(missing_ok=True)
 
 
 def main() -> None:
     _stop_service("frontend")
-    _stop_service("backend")
     _stop_service_by_port("frontend", 5500)
+    _stop_service("backend")
     _stop_service_by_port("backend", 8000)
 
 

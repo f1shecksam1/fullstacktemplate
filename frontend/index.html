@@ -4,13 +4,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fullstack Template Home</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <main class="container">
       <header class="page-header">
+        <span class="eyebrow">API Control Workspace</span>
         <h1>Fullstack Template</h1>
-        <p>Multi-page frontend routing sample with dedicated API pages.</p>
+        <p>
+          Guided and forgiving workflow for semi-technical users. Configure once, choose endpoint,
+          review request, then inspect response.
+        </p>
       </header>
 
       <nav class="nav">
@@ -22,27 +32,34 @@
       </nav>
 
       <section class="card controls">
-        <h2>Navigation Playground</h2>
+        <h2>Step 1 — Configure API Connection</h2>
+        <p class="helper-text">Keep default while running locally, then continue to a target endpoint page.</p>
         <label class="field" for="api-base">
           API Base URL
           <input id="api-base" type="text" value="http://127.0.0.1:8000" />
         </label>
-        <p>
-          Her endpoint icin ayri sayfaya gecip istek atabilirsiniz. Bu sayfa sadece yonlendirme ve
-          loglama merkezi gibi davranir.
-        </p>
-        <button id="btn-stop-project" type="button">Projeden Cik (Tum Servisleri Kapat)</button>
+        <details class="advanced-panel">
+          <summary>Why this page exists</summary>
+          <p>
+            Use this home screen as your traffic hub: jump to endpoint pages, observe request payloads,
+            and monitor operation summaries in one consistent flow.
+          </p>
+        </details>
+        <button id="btn-stop-project" type="button">Stop Project (Shut Down Services)</button>
       </section>
 
-      <section class="card">
-        <h2>Sent Payload</h2>
-        <pre id="request-payload">No request sent yet.</pre>
-      </section>
+      <section class="results-grid" aria-live="polite">
+        <section class="card">
+          <h2>Step 2 — Sent Payload</h2>
+          <pre id="request-payload">No request sent yet.</pre>
+        </section>
 
-      <section class="card">
-        <h2>Result</h2>
-        <p id="operation-summary" class="operation-summary">No operation yet.</p>
-        <pre id="result">Navigate to an endpoint page and run requests.</pre>
+        <section class="card">
+          <h2>Step 3 — Result</h2>
+          <p id="request-status" class="request-status" data-tone="neutral">Ready to continue.</p>
+          <p id="operation-summary" class="operation-summary">No operation yet.</p>
+          <pre id="result">Navigate to an endpoint page and run requests.</pre>
+        </section>
       </section>
     </main>
 

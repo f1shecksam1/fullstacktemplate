@@ -4,6 +4,8 @@ import {
   logPageViewed,
   type PageSetupOptions,
   requestJson,
+  setFieldMessage,
+  setRequestStatus,
   setupNavigationLogging,
 } from "./shared.js";
 
@@ -21,9 +23,43 @@ export function mountEchoPage(options?: PageSetupOptions): void {
 
   setupNavigationLogging(context);
   void logPageViewed(context, "echo");
+  setRequestStatus(context, "Ready to run echo request.", "neutral");
+
+  const syncEchoGuidance = (): boolean => {
+    const isEmpty = input.value.trim().length === 0;
+    if (isEmpty) {
+      setFieldMessage(
+        context.documentRef,
+        "echo-help",
+        "Message is required before sending request.",
+        "error",
+      );
+    } else {
+      setFieldMessage(
+        context.documentRef,
+        "echo-help",
+        `Payload ready (${input.value.trim().length} chars).`,
+        "success",
+      );
+    }
+
+    return !isEmpty;
+  };
+
+  input.addEventListener("input", () => {
+    syncEchoGuidance();
+  });
+
+  syncEchoGuidance();
 
   button.addEventListener("click", () => {
-    const message = input.value;
+    const message = input.value.trim();
+    if (!syncEchoGuidance()) {
+      setRequestStatus(context, "Echo request blocked: message is empty.", "error");
+      return;
+    }
+
+    setRequestStatus(context, "Running POST /echo...", "running");
     void context.logger.log({
       level: "info",
       event: "ui.button.clicked",

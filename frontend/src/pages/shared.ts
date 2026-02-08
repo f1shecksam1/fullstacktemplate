@@ -30,6 +30,7 @@ export interface PageContext {
   resultElement: HTMLElement;
   summaryElement: HTMLElement | null;
   requestElement: HTMLElement | null;
+  requestStatusElement: HTMLElement | null;
 }
 
 function defaultFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
@@ -64,6 +65,10 @@ function resolveRequestElement(documentRef: Document): HTMLElement | null {
   return documentRef.getElementById("request-payload");
 }
 
+function resolveRequestStatusElement(documentRef: Document): HTMLElement | null {
+  return documentRef.getElementById("request-status");
+}
+
 function apiBaseUrl(input: HTMLInputElement): string {
   return normalizeApiBaseUrl(input.value || "http://127.0.0.1:8000");
 }
@@ -74,6 +79,7 @@ export function createPageContext(options: PageSetupOptions = {}): PageContext |
   const resultElement = resolveResultElement(documentRef);
   const summaryElement = resolveSummaryElement(documentRef);
   const requestElement = resolveRequestElement(documentRef);
+  const requestStatusElement = resolveRequestStatusElement(documentRef);
   if (apiBaseInput == null || resultElement == null) {
     return null;
   }
@@ -95,7 +101,38 @@ export function createPageContext(options: PageSetupOptions = {}): PageContext |
     resultElement,
     summaryElement,
     requestElement,
+    requestStatusElement,
   };
+}
+
+export type StatusTone = "neutral" | "running" | "success" | "error";
+
+export function setRequestStatus(
+  context: PageContext,
+  message: string,
+  tone: StatusTone = "neutral",
+): void {
+  if (context.requestStatusElement == null) {
+    return;
+  }
+
+  context.requestStatusElement.textContent = message;
+  context.requestStatusElement.dataset.tone = tone;
+}
+
+export function setFieldMessage(
+  documentRef: Document,
+  elementId: string,
+  message: string,
+  tone: Exclude<StatusTone, "running"> = "neutral",
+): void {
+  const node = documentRef.getElementById(elementId);
+  if (node == null) {
+    return;
+  }
+
+  node.textContent = message;
+  node.setAttribute("data-tone", tone);
 }
 
 export async function requestJson(

@@ -24,6 +24,20 @@ export interface ApiRequestContext {
   resultElement: HTMLElement;
   summaryElement: HTMLElement | null;
   requestElement: HTMLElement | null;
+  requestStatusElement: HTMLElement | null;
+}
+
+function renderRequestStatus(
+  requestStatusElement: HTMLElement | null,
+  message: string,
+  tone: "running" | "success" | "error",
+): void {
+  if (requestStatusElement == null) {
+    return;
+  }
+
+  requestStatusElement.textContent = message;
+  requestStatusElement.dataset.tone = tone;
 }
 
 function apiBaseUrl(input: HTMLInputElement): string {
@@ -50,6 +64,7 @@ export async function requestJson(
     path,
     requestBody: parsedBody,
   });
+  renderRequestStatus(context.requestStatusElement, `Running ${method} request...`, "running");
 
   await context.logger.log({
     level: "info",
@@ -76,6 +91,7 @@ export async function requestJson(
         { error: `HTTP ${response.status}`, details: data },
         summary,
       );
+      renderRequestStatus(context.requestStatusElement, `Request failed with HTTP ${response.status}.`, "error");
       return;
     }
 
@@ -86,6 +102,7 @@ export async function requestJson(
       details: { path, method, statusCode: response.status, summary },
     });
     renderOperationResult(context.resultElement, context.summaryElement, data, summary);
+    renderRequestStatus(context.requestStatusElement, "Request completed successfully.", "success");
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     const summary = `Istek sirasinda hata olustu: ${method} ${path}`;
@@ -97,5 +114,6 @@ export async function requestJson(
       details: { path, method, summary },
     });
     renderOperationError(context.resultElement, context.summaryElement, { error: message }, summary);
+    renderRequestStatus(context.requestStatusElement, "Request failed due to a runtime error.", "error");
   }
 }

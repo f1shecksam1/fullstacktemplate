@@ -4,13 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Math Endpoint</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="../styles.css" />
   </head>
   <body>
     <main class="container">
       <header class="page-header">
+        <span class="eyebrow">Endpoint Flow</span>
         <h1>Math Add Endpoint Page</h1>
-        <p>GET /api/v1/math/add cagrisi bu sayfada ayrica test edilir.</p>
+        <p>Test <code>GET /api/v1/math/add</code> with guided inputs, validation, and quick result interpretation.</p>
       </header>
 
       <nav class="nav">
@@ -22,6 +29,8 @@
       </nav>
 
       <section class="card controls">
+        <h2>Step 1 — Configure and Prepare Inputs</h2>
+        <p class="helper-text">Both number fields are required. Decimals are supported.</p>
         <label class="field" for="api-base">
           API Base URL
           <input id="api-base" type="text" value="http://127.0.0.1:8000" />
@@ -37,19 +46,28 @@
             <input id="add-b" type="number" value="4" step="any" />
           </label>
         </div>
+        <p id="math-help" class="field-message" role="status" aria-live="polite">Ready to calculate.</p>
+
+        <details class="advanced-panel">
+          <summary>Input guidance</summary>
+          <p>Use realistic values to verify query serialization and operation summaries in logs.</p>
+        </details>
 
         <button id="btn-run-add" type="button">Run GET /api/v1/math/add</button>
       </section>
 
-      <section class="card">
-        <h2>Sent Payload</h2>
-        <pre id="request-payload">No request sent yet.</pre>
-      </section>
+      <section class="results-grid" aria-live="polite">
+        <section class="card">
+          <h2>Step 2 — Sent Payload</h2>
+          <pre id="request-payload">No request sent yet.</pre>
+        </section>
 
-      <section class="card">
-        <h2>Response</h2>
-        <p id="operation-summary" class="operation-summary">No operation yet.</p>
-        <pre id="result">Click the button to request math endpoint.</pre>
+        <section class="card">
+          <h2>Step 3 — Response</h2>
+          <p id="request-status" class="request-status" data-tone="neutral">Ready to run math request.</p>
+          <p id="operation-summary" class="operation-summary">No operation yet.</p>
+          <pre id="result">Click the button to request math endpoint.</pre>
+        </section>
       </section>
     </main>
 

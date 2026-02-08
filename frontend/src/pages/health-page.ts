@@ -4,6 +4,7 @@ import {
   logPageViewed,
   type PageSetupOptions,
   requestJson,
+  setRequestStatus,
   setupNavigationLogging,
 } from "./shared.js";
 
@@ -20,8 +21,10 @@ export function mountHealthPage(options?: PageSetupOptions): void {
 
   setupNavigationLogging(context);
   void logPageViewed(context, "health");
+  setRequestStatus(context, "Ready to run health request.", "neutral");
 
   button.addEventListener("click", () => {
+    setRequestStatus(context, "Running GET /health...", "running");
     void context.logger.log({
       level: "info",
       event: "ui.button.clicked",

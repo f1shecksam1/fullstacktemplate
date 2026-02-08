@@ -4,6 +4,7 @@ import {
   logPageViewed,
   type PageSetupOptions,
   requestJson,
+  setRequestStatus,
   setupNavigationLogging,
 } from "./shared.js";
 
@@ -20,8 +21,10 @@ export function mountTimePage(options?: PageSetupOptions): void {
 
   setupNavigationLogging(context);
   void logPageViewed(context, "time");
+  setRequestStatus(context, "Ready to run time request.", "neutral");
 
   button.addEventListener("click", () => {
+    setRequestStatus(context, "Running GET /time...", "running");
     void context.logger.log({
       level: "info",
       event: "ui.button.clicked",

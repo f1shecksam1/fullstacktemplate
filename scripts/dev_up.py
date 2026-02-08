@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 from typing import Final
 
 PROJECT_ROOT: Final[Path] = Path(__file__).resolve().parents[1]
@@ -12,6 +12,19 @@ LOG_DIR: Final[Path] = PROJECT_ROOT / "logs"
 
 
 def _is_running(pid: int) -> bool:
+    if pid <= 0:
+        return False
+
+    if sys.platform == "win32":
+        result = subprocess.run(
+            ["tasklist", "/FI", f"PID eq {pid}"],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        output = (result.stdout or "").upper()
+        return str(pid) in output and "NO TASKS ARE RUNNING" not in output
+
     try:
         os.kill(pid, 0)
     except Exception:
@@ -34,22 +47,23 @@ def _service_pid_file(service_name: str) -> Path:
 
 
 def _start_service(service_name: str, command: list[str], log_file: Path) -> int:
-    creationflags = 0
-    popen_kwargs: dict[str, object] = {}
-    if sys.platform == "win32":
-        creationflags = subprocess.CREATE_NEW_PROCESS_GROUP
-    else:
-        popen_kwargs["start_new_session"] = True
-
     with log_file.open("a", encoding="utf-8") as log_handle:
-        process = subprocess.Popen(
-            command,
-            cwd=str(PROJECT_ROOT),
-            stdout=log_handle,
-            stderr=subprocess.STDOUT,
-            creationflags=creationflags,
-            **popen_kwargs,
-        )
+        if sys.platform == "win32":
+            process = subprocess.Popen(
+                command,
+                cwd=str(PROJECT_ROOT),
+                stdout=log_handle,
+                stderr=subprocess.STDOUT,
+                creationflags=subprocess.CREATE_NEW_PROCESS_GROUP,
+            )
+        else:
+            process = subprocess.Popen(
+                command,
+                cwd=str(PROJECT_ROOT),
+                stdout=log_handle,
+                stderr=subprocess.STDOUT,
+                start_new_session=True,
+            )
 
     pid = process.pid
     _service_pid_file(service_name).write_text(str(pid), encoding="utf-8")
@@ -81,7 +95,9 @@ def _listening_pids(port: int) -> set[int]:
             continue
         maybe_pid = parts[-1]
         if maybe_pid.isdigit():
-            pids.add(int(maybe_pid))
+            pid = int(maybe_pid)
+            if _is_running(pid):
+                pids.add(pid)
 
     return pids
 
@@ -97,7 +113,8 @@ def _ensure_clean_state() -> None:
             continue
         if _is_running(pid):
             raise SystemExit(
-                f"{service_name} already running (pid={pid}). Run `make down` before `make up`."
+                f"{service_name} already running (pid={pid}). "
+                "Run `make down` before `make up`."
             )
         pid_file.unlink(missing_ok=True)
 
