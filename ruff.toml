@@ -1,0 +1,10 @@
+target-version = "py310"
+line-length = 88
+src = ["backend"]
+
+[lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[format]
+quote-style = "double"
+indent-style = "space"

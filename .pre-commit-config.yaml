@@ -1,0 +1,41 @@
+exclude: (^fullstack_template\.egg-info/|.*\.code-workspace$|^Makefile$|^README\.md$|^pyproject\.toml$|^ruff\.toml$|^\.env\.example$|^\.gitignore$)
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+
+  - repo: local
+    hooks:
+      - id: backend-ruff
+        name: backend ruff
+        entry: python -m ruff check backend
+        language: system
+        pass_filenames: false
+      - id: backend-black
+        name: backend black check
+        entry: python -m black --check backend
+        language: system
+        pass_filenames: false
+      - id: backend-mypy
+        name: backend mypy
+        entry: python -m mypy
+        language: system
+        pass_filenames: false
+      - id: backend-pytest
+        name: backend pytest
+        entry: python -m pytest tests/backend
+        language: system
+        pass_filenames: false
+      - id: frontend-typecheck
+        name: frontend typecheck
+        entry: npm --prefix frontend run check
+        language: system
+        pass_filenames: false
+      - id: frontend-tests
+        name: frontend tests
+        entry: npm --prefix frontend run test
+        language: system
+        pass_filenames: false

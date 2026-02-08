@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fullstack-template"
+version = "0.1.0"
+description = "Simple fullstack template with Python backend and HTML/CSS/TypeScript frontend"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.115.0",
+  "python-dotenv>=1.0.1",
+  "uvicorn[standard]>=0.30.6",
+]
+
+[project.optional-dependencies]
+dev = [
+  "black>=24.8.0",
+  "httpx>=0.27.2",
+  "mypy>=1.11.2",
+  "pre-commit>=4.0.1",
+  "pytest>=8.3.3",
+  "ruff>=0.6.9",
+]
+
+[tool.black]
+line-length = 88
+target-version = ["py310"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_unused_configs = true
+files = ["backend/app"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.setuptools.packages.find]
+include = ["backend*"]
+exclude = ["frontend*"]

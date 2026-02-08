@@ -1,0 +1,227 @@
+Metadata-Version: 2.4
+Name: fullstack-template
+Version: 0.1.0
+Summary: Simple fullstack template with Python backend and HTML/CSS/TypeScript frontend
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: fastapi>=0.115.0
+Requires-Dist: python-dotenv>=1.0.1
+Requires-Dist: structlog>=24.4.0
+Requires-Dist: uvicorn[standard]>=0.30.6
+Provides-Extra: dev
+Requires-Dist: black>=24.8.0; extra == "dev"
+Requires-Dist: httpx>=0.27.2; extra == "dev"
+Requires-Dist: mypy>=1.11.2; extra == "dev"
+Requires-Dist: pre-commit>=4.0.1; extra == "dev"
+Requires-Dist: pytest>=8.3.3; extra == "dev"
+Requires-Dist: ruff>=0.6.9; extra == "dev"
+
+# Fullstack Template (HTML + CSS + TypeScript + Python)
+
+Basit bir fullstack template.
+
+- Frontend: HTML + CSS + TypeScript
+- Backend: FastAPI (Python)
+- Logging: structlog + gunluk rotating `.log`
+- Code quality: Ruff + Black + MyPy + pre-commit
+- Config: `.env`, `pyproject.toml`, `ruff.toml`, `tsconfig.json`
+
+## Klasor yapisi
+
+```
+.
+├─ backend/
+│  └─ app/
+│     ├─ main.py
+│     ├─ core/
+│     │  ├─ config.py
+│     │  └─ logging.py
+│     └─ api/
+│        ├─ router.py
+│        └─ v1/
+│           ├─ router.py
+│           ├─ endpoints/
+│           │  ├─ health.py
+│           │  ├─ echo.py
+│           │  ├─ time.py
+│           │  ├─ math.py
+│           │  └─ logs.py
+│           └─ schemas/
+│              ├─ health.py
+│              ├─ echo.py
+│              ├─ time.py
+│              ├─ math.py
+│              └─ logs.py
+├─ frontend/
+│  ├─ index.html
+│  ├─ health.html
+│  ├─ echo.html
+│  ├─ time.html
+│  ├─ math.html
+│  ├─ styles.css
+│  ├─ src/
+│  │  ├─ logger.ts
+│  │  └─ pages/
+│  │     ├─ shared.ts
+│  │     ├─ home-page.ts
+│  │     ├─ health-page.ts
+│  │     ├─ echo-page.ts
+│  │     ├─ time-page.ts
+│  │     ├─ math-page.ts
+│  │     ├─ home.ts
+│  │     ├─ health.ts
+│  │     ├─ echo.ts
+│  │     ├─ time.ts
+│  │     └─ math.ts
+│  ├─ tests/
+│  │  ├─ logger.test.ts
+│  │  └─ pages.integration.test.ts
+│  ├─ dist/                   # npm run build ciktisi
+│  ├─ package.json
+│  ├─ tsconfig.json
+│  └─ vitest.config.ts
+├─ tests/backend/
+│  ├─ conftest.py
+│  ├─ test_health.py
+│  ├─ test_echo.py
+│  ├─ test_time.py
+│  ├─ test_math.py
+│  └─ test_logs.py
+├─ .pre-commit-config.yaml
+├─ .vscode/settings.json
+├─ logs/
+├─ .env
+├─ .env.example
+├─ pyproject.toml
+└─ ruff.toml
+```
+
+## Kurulum
+
+Python tarafi:
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+pip install -e .[dev]
+pre-commit install
+```
+
+TypeScript derleme:
+
+```bash
+cd frontend
+npm install
+npm run build
+```
+
+## Calistirma
+
+Backend API:
+
+```bash
+make run
+```
+
+Frontend (ayri static server):
+
+```bash
+make frontend-build
+make frontend-serve
+```
+
+- Backend API: `http://127.0.0.1:8000`
+- Frontend UI: `http://127.0.0.1:5500`
+
+Frontend ekraninda API Base URL alanina backend adresi girili gelir (`http://127.0.0.1:8000`).
+
+## Kalite kontrolleri
+
+```bash
+python -m ruff check backend
+python -m black --check backend
+python -m mypy
+```
+
+TypeScript type-check:
+
+```bash
+cd frontend
+npm run check
+```
+
+Backend test:
+
+```bash
+python -m pytest tests/backend
+```
+
+Frontend test:
+
+```bash
+cd frontend
+npm run test
+```
+
+## Frontend serving modeli
+
+- Frontend ve backend tamamen ayridir.
+- Frontend kaynaklari ve build ciktilari sadece `frontend/` altindadir.
+- Backend sadece API endpointleri sunar (`/api/v1/*`).
+- CORS, `http://127.0.0.1:5500` ve `http://localhost:5500` icin aciktir.
+- Frontend coklu sayfa yonlendirme ornegi sunar (`index.html`, `health.html`, `echo.html`, `time.html`, `math.html`).
+
+## API v1 endpointleri
+
+- `GET /api/v1/health`
+- `POST /api/v1/echo`
+- `GET /api/v1/time`
+- `GET /api/v1/math/add?a=3&b=4`
+- `POST /api/v1/logs/frontend`
+
+Her endpoint icin request/response semalari `backend/app/api/v1/schemas/` altinda ayri dosyalarda tutulur.
+
+## Loglama mimarisi
+
+- Backend ve frontend loglari JSON formatinda `structlog` ile yazilir.
+- Log dosyalari `logs/` altina yazilir:
+  - `logs/backend.log`
+  - `logs/frontend.log`
+- Gunluk rotation vardir (midnight rollover), eski dosyalar `backend-YYYY-MM-DD.log` ve `frontend-YYYY-MM-DD.log` olarak tutulur.
+- Tum log kayitlarina otomatik su sabit alanlar eklenir: `service`, `version`, `environment`, `trace_id`.
+- Frontend browser eventleri backend'e `POST /api/v1/logs/frontend` ile gonderilir ve frontend log dosyasina yazilir.
+
+## Test stratejisi
+
+- Backend testleri endpoint bazli moduler dosyalara ayrildi.
+- `tests/backend/conftest.py` icinde fixture ve mocking katmani bulunur.
+- Frontend unit testleri logger davranisini test eder.
+- Frontend integration testleri DOM seviyesinde her endpoint sayfasindan API request akisini test eder.
+
+## Pre-commit
+
+- `.pre-commit-config.yaml` icinde backend ve frontend quality gate'leri tanimlidir.
+- Hooklar: Ruff, Black, MyPy, Pytest, frontend typecheck ve frontend test.
+- Ilk kurulum: `pre-commit install`
+
+## Notlar
+
+- Bu template bilerek database, ORM, migration veya auth yapisi icermez.
+- `.env` ile basit environment ayarlari yuklenir.
+
+## Makefile komutlari
+
+```bash
+make install-dev
+make frontend-install
+make frontend-build
+make frontend-serve
+make run
+make test
+```
+
+Tum kontroller:
+
+```bash
+make check
+```

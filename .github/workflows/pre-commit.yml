@@ -1,0 +1,33 @@
+name: Pre-Commit
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install backend dependencies
+        run: python -m pip install -e .[dev]
+
+      - name: Install frontend dependencies
+        run: npm --prefix frontend install
+
+      - name: Run pre-commit
+        run: python -m pre_commit run --all-files

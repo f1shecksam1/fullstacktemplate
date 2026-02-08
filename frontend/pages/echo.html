@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Echo Endpoint</title>
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header class="page-header">
+        <h1>Echo Endpoint Page</h1>
+        <p>POST /api/v1/echo cagrisi bu sayfada ayrica test edilir.</p>
+      </header>
+
+      <nav class="nav">
+        <a href="../index.html">Home</a>
+        <a href="./health.html">Health Page</a>
+        <a class="active" href="./echo.html">Echo Page</a>
+        <a href="./time.html">Time Page</a>
+        <a href="./math.html">Math Page</a>
+      </nav>
+
+      <section class="card controls">
+        <label class="field" for="api-base">
+          API Base URL
+          <input id="api-base" type="text" value="http://127.0.0.1:8000" />
+        </label>
+
+        <label class="field" for="echo-input">
+          Message
+          <input id="echo-input" type="text" value="Merhaba API" />
+        </label>
+
+        <button id="btn-run-echo" type="button">Run POST /api/v1/echo</button>
+      </section>
+
+      <section class="card">
+        <h2>Sent Payload</h2>
+        <pre id="request-payload">No request sent yet.</pre>
+      </section>
+
+      <section class="card">
+        <h2>Response</h2>
+        <p id="operation-summary" class="operation-summary">No operation yet.</p>
+        <pre id="result">Click the button to request echo endpoint.</pre>
+      </section>
+    </main>
+
+    <script type="module" src="../dist/pages/echo.js"></script>
+  </body>
+</html>

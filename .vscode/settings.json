@@ -1,0 +1,30 @@
+{
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/.mypy_cache": true,
+    "**/.ruff_cache": true,
+    "**/.vitest": true,
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/logs": false,
+    "**/.egg-info": true,
+    "**/fullstack_template.egg-info": true,
+    "**/.run": true,
+    "**/.venv": true
+  },
+  "search.exclude": {
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/.mypy_cache": true,
+    "**/.ruff_cache": true,
+    "**/.vitest": true,
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/logs": false,
+    "**/.egg-info": true,
+    "**/fullstack_template.egg-info": true,
+    "**/.run": true,
+    "**/.venv": true
+  }
+}

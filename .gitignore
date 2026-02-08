@@ -1,0 +1,53 @@
+# --- Python ---
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.python-version
+
+# Tool caches
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.hypothesis/
+.tox/
+.nox/
+
+# Packaging / build
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Test / coverage
+.coverage
+.coverage.*
+coverage/
+htmlcov/
+
+# --- Node / frontend ---
+node_modules/
+frontend/.vitest/
+frontend/coverage/
+frontend/dist/
+
+# --- Runtime outputs ---
+logs/
+*.log
+
+# --- Environment files ---
+.env
+.env.*
+!.env.example
+
+# --- IDE / editor ---
+.vscode/
+.idea/
+.run/
+
+# --- OS files ---
+.DS_Store
+Thumbs.db
