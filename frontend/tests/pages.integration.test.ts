@@ -62,7 +62,7 @@ describe("endpoint pages", () => {
       "/api/v1/admin/stop-project",
     );
     expect(document.getElementById("operation-summary")?.textContent).toContain(
-      "Kapatma komutu gonderildi",
+      "Shutdown command sent",
     );
   });
 
@@ -97,7 +97,7 @@ describe("endpoint pages", () => {
     );
     expect(document.getElementById("result")?.textContent).toContain("\"status\": \"ok\"");
     expect(document.getElementById("operation-summary")?.textContent).toContain(
-      "Saglik kontrolu tamamlandi",
+      "Health check completed",
     );
     expect(loggerStub.log).toHaveBeenCalled();
   });
@@ -134,7 +134,7 @@ describe("endpoint pages", () => {
     expect(init.body).toBe("{\"message\":\"hello\"}");
     expect(document.getElementById("request-payload")?.textContent).toContain("hello");
     expect(document.getElementById("operation-summary")?.textContent).toContain(
-      "Echo islemi tamamlandi",
+      "Echo operation completed",
     );
   });
 
@@ -171,7 +171,7 @@ describe("endpoint pages", () => {
     );
     expect(document.getElementById("result")?.textContent).toContain("utc");
     expect(document.getElementById("operation-summary")?.textContent).toContain(
-      "Sunucu zamani alindi",
+      "Server time received",
     );
   });
 
@@ -207,7 +207,7 @@ describe("endpoint pages", () => {
     expect(document.getElementById("request-payload")?.textContent).toContain("4.5");
     expect(document.getElementById("result")?.textContent).toContain("\"result\": 6.5");
     expect(document.getElementById("operation-summary")?.textContent).toContain(
-      "Toplama islemi: 2 + 4.5 = 6.5",
+      "Addition operation: 2 + 4.5 = 6.5",
     );
   });
 });

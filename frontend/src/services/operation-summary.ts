@@ -15,33 +15,33 @@ export function describeOperation(
   const payload = asRecord(data);
 
   if (statusCode < 200 || statusCode >= 300) {
-    return `Istek basarisiz: ${method} ${path} (HTTP ${statusCode})`;
+    return `Request failed: ${method} ${path} (HTTP ${statusCode})`;
   }
 
   if (path.startsWith("/api/v1/health")) {
-    return `Saglik kontrolu tamamlandi: status=${String(payload.status ?? "ok")}`;
+    return `Health check completed: status=${String(payload.status ?? "ok")}`;
   }
 
   if (path.startsWith("/api/v1/time")) {
-    return `Sunucu zamani alindi: ${String(payload.utc ?? "bilinmiyor")}`;
+    return `Server time received: ${String(payload.utc ?? "unknown")}`;
   }
 
   if (path.startsWith("/api/v1/echo")) {
     const echoed = String(payload.echoed ?? "");
     const length = String(payload.length ?? echoed.length);
-    return `Echo islemi tamamlandi: "${echoed}" (uzunluk=${length})`;
+    return `Echo operation completed: "${echoed}" (length=${length})`;
   }
 
   if (path.startsWith("/api/v1/math/add")) {
     const a = Number(payload.a ?? 0);
     const b = Number(payload.b ?? 0);
     const result = Number(payload.result ?? a + b);
-    return `Toplama islemi: ${a} + ${b} = ${result}`;
+    return `Addition operation: ${a} + ${b} = ${result}`;
   }
 
   if (path.startsWith("/api/v1/admin/stop-project")) {
-    return "Kapatma komutu gonderildi: backend ve frontend durduruluyor.";
+    return "Shutdown command sent: backend and frontend are stopping.";
   }
 
-  return `Istek basarili: ${method} ${path} (HTTP ${statusCode})`;
+  return `Request successful: ${method} ${path} (HTTP ${statusCode})`;
 }

@@ -105,7 +105,7 @@ export async function requestJson(
     renderRequestStatus(context.requestStatusElement, "Request completed successfully.", "success");
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
-    const summary = `Istek sirasinda hata olustu: ${method} ${path}`;
+    const summary = `An error occurred during the request: ${method} ${path}`;
     await context.logger.log({
       level: "error",
       event: "api.request.exception",

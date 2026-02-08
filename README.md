@@ -1,14 +1,36 @@
 # Fullstack Template (HTML + CSS + TypeScript + Python)
 
-Basit bir fullstack template.
+A simple fullstack template.
 
 - Frontend: HTML + CSS + TypeScript
 - Backend: FastAPI (Python)
-- Logging: stdlib logging + gunluk rotating `.log`
+- Logging: stdlib logging + daily rotating `.log`
 - Code quality: Ruff + Black + MyPy + pre-commit
 - Config: `.env`, `pyproject.toml`, `ruff.toml`, `tsconfig.json`
 
-## Klasor yapisi
+## Backend technologies and libraries
+
+- Runtime: Python 3.12 (`requires-python` in `pyproject.toml`)
+- API framework: FastAPI
+- ASGI server: Uvicorn (`uvicorn[standard]`)
+- Data validation and schemas: Pydantic models
+- Environment/config loading: `python-dotenv` + typed dataclass settings
+- Logging: Python stdlib `logging` with `contextvars`-based request ID enrichment
+- Backend testing: `pytest` + FastAPI `TestClient` (HTTPX transport)
+- Backend quality tools: Ruff, Black, MyPy, pre-commit hooks
+
+## Frontend technologies and libraries
+
+- UI architecture: multi-page static HTML (`index.html` + `pages/*.html`)
+- Styling: plain CSS (`frontend/styles.css`)
+- Client language/runtime: TypeScript compiled to ES2020 modules (`frontend/tsconfig.json`)
+- Browser APIs used in source: Fetch API, DOM APIs, `FormData`, `URLSearchParams`
+- Build/type-check tooling: TypeScript compiler (`tsc`)
+- Frontend testing: Vitest + JSDOM (`frontend/vitest.config.ts`)
+- Package/dependency management: npm (`frontend/package.json`, `frontend/package-lock.json`)
+- Frontend app style: framework-free (no React/Vue/Angular dependency in frontend package manifest)
+
+## Folder structure
 
 ```
 .
@@ -66,7 +88,7 @@ Basit bir fullstack template.
 │  ├─ tests/
 │  │  ├─ logger.test.ts
 │  │  └─ pages.integration.test.ts
-│  ├─ dist/                   # npm run build ciktisi
+│  ├─ dist/                   # output of npm run build
 │  ├─ package.json
 │  ├─ tsconfig.json
 │  └─ vitest.config.ts
@@ -90,9 +112,9 @@ Basit bir fullstack template.
 └─ ruff.toml
 ```
 
-## Kurulum
+## Setup
 
-Python tarafi:
+Python setup:
 
 ```bash
 python -m venv .venv
@@ -101,7 +123,7 @@ pip install -e .[dev]
 pre-commit install
 ```
 
-TypeScript derleme:
+TypeScript build:
 
 ```bash
 cd frontend
@@ -109,7 +131,7 @@ npm install
 npm run build
 ```
 
-## Calistirma
+## Run
 
 Backend API:
 
@@ -117,33 +139,33 @@ Backend API:
 make run
 ```
 
-Frontend (ayri static server):
+Frontend (separate static server):
 
 ```bash
 make frontend-build
 make frontend-serve
 ```
 
-Tum projeyi tek komutla ayaga kaldirma (backend + frontend):
+Start the full project with one command (backend + frontend):
 
 ```bash
 make up
 ```
 
-Tum projeyi tek komutla kapatma:
+Stop the full project with one command:
 
 ```bash
 make down
 ```
 
-`make down`, PID dosyalari disinda 5500 ve 8000 portlarinda dinleyen kalmis surecleri de sonlandirir.
+`make down` also terminates remaining processes listening on ports 5500 and 8000, beyond PID-file based shutdown.
 
 - Backend API: `http://127.0.0.1:8000`
 - Frontend UI: `http://127.0.0.1:5500`
 
-Frontend ekraninda API Base URL alanina backend adresi girili gelir (`http://127.0.0.1:8000`).
+The API Base URL field in the frontend is prefilled with the backend address (`http://127.0.0.1:8000`).
 
-## Kalite kontrolleri
+## Quality checks
 
 ```bash
 python -m ruff check backend
@@ -158,7 +180,7 @@ cd frontend
 npm run check
 ```
 
-Backend test:
+Backend tests:
 
 ```bash
 python -m pytest tests/backend
@@ -171,18 +193,18 @@ cd frontend
 npm run test
 ```
 
-## Frontend serving modeli
+## Frontend serving model
 
-- Frontend ve backend tamamen ayridir.
-- Frontend kaynaklari ve build ciktilari sadece `frontend/` altindadir.
-- Backend sadece API endpointleri sunar (`/api/v1/*`).
-- CORS, `http://127.0.0.1:5500` ve `http://localhost:5500` icin aciktir.
-- Frontend coklu sayfa yonlendirme ornegi sunar (`index.html`, `pages/health.html`, `pages/echo.html`, `pages/time.html`, `pages/math.html`).
-- Her endpoint sayfasinda endpoint'e gonderilen payload ve endpointten donen payload gosterilir.
-- Her endpoint sayfasinda isleme dair aciklayici ozet metni gosterilir.
-- Ana sayfada "Projeden Cik" butonu vardir; `POST /api/v1/admin/stop-project` ile tum servisleri kapatma akisini tetikler.
+- Frontend and backend are fully separated.
+- Frontend source files and build outputs live only under `frontend/`.
+- Backend serves API endpoints only (`/api/v1/*`).
+- CORS is enabled for `http://127.0.0.1:5500` and `http://localhost:5500`.
+- Frontend provides multi-page navigation (`index.html`, `pages/health.html`, `pages/echo.html`, `pages/time.html`, `pages/math.html`).
+- Each endpoint page shows request payload sent to the endpoint and payload returned from the endpoint.
+- Each endpoint page shows an explanatory operation summary text.
+- The home page includes an "Exit Project" button; it triggers the full-service shutdown flow via `POST /api/v1/admin/stop-project`.
 
-## API v1 endpointleri
+## API v1 endpoints
 
 - `GET /api/v1/health`
 - `POST /api/v1/echo`
@@ -191,45 +213,45 @@ npm run test
 - `POST /api/v1/logs/frontend`
 - `POST /api/v1/admin/stop-project`
 
-Her endpoint icin request/response semalari `backend/app/api/v1/schemas/` altinda ayri dosyalarda tutulur.
+Request/response schemas for each endpoint are kept in separate files under `backend/app/api/v1/schemas/`.
 
-## Loglama mimarisi
+## Logging architecture
 
-- Backend loglamasi stdlib `logging` ile yapilir.
-- `contextvars` tabanli `request_id` butun kayitlara otomatik eklenir.
-- `service`, `version`, `environment` alanlari tum log satirlarina otomatik eklenir.
-- Log formati: `timestamp | level | logger | request_id | message`.
-- Gunluk dosya acma modeli kullanilir: `backend-YYYY-MM-DD.log`.
-- Eski log temizligi retention gunu ile otomatik yapilir (`LOG_RETENTION_DAYS`).
-- Varsayilan log seviyesi `DEBUG` olarak ayarlidir.
-- Frontend browser eventleri backend'e `POST /api/v1/logs/frontend` ile gonderilir ve ayni gunluk dosyaya yazilir.
-- VS Code ayarlarinda `logs/` klasoru gorunur, cache klasorleri gizli kalir.
+- Backend logging uses stdlib `logging`.
+- A `contextvars`-based `request_id` is automatically added to all records.
+- `service`, `version`, and `environment` fields are automatically included in every log line.
+- Log format: `timestamp | level | logger | request_id | message`.
+- Daily file naming is used: `backend-YYYY-MM-DD.log`.
+- Old log cleanup runs automatically using retention days (`LOG_RETENTION_DAYS`).
+- The default log level is `DEBUG`.
+- Frontend browser events are sent to the backend via `POST /api/v1/logs/frontend` and written to the same daily file.
+- In VS Code settings, the `logs/` directory is visible while cache directories remain hidden.
 
-Ornek log satiri:
+Example log line:
 
 ```text
 2026-02-07 11:58:02 | INFO | backend.http | 8f03c88e74dd4a54b59588e9b5f9a4ea | service=fullstack-template-backend | version=0.1.0 | environment=development | http.request.completed | method=POST | path=/api/v1/logs/frontend | status_code=200
 ```
 
-## Test stratejisi
+## Test strategy
 
-- Backend testleri endpoint bazli moduler dosyalara ayrildi.
-- `tests/backend/conftest.py` icinde fixture ve mocking katmani bulunur.
-- Frontend unit testleri logger davranisini test eder.
-- Frontend integration testleri DOM seviyesinde her endpoint sayfasindan API request akisini test eder.
+- Backend tests are split into endpoint-based modular files.
+- `tests/backend/conftest.py` contains shared fixtures and the mocking layer.
+- Frontend unit tests verify logger behavior.
+- Frontend integration tests validate API request flows for each endpoint page at DOM level.
 
 ## Pre-commit
 
-- `.pre-commit-config.yaml` icinde backend ve frontend quality gate'leri tanimlidir.
-- Hooklar: Ruff, Black, MyPy, Pytest, frontend typecheck ve frontend test.
-- Ilk kurulum: `pre-commit install`
+- `.pre-commit-config.yaml` defines backend and frontend quality gates.
+- Hooks: Ruff, Black, MyPy, Pytest, frontend type-check, and frontend tests.
+- Initial setup: `pre-commit install`
 
-## Notlar
+## Notes
 
-- Bu template bilerek database, ORM, migration veya auth yapisi icermez.
-- `.env` ile basit environment ayarlari yuklenir.
+- This template intentionally does not include a database, ORM, migrations, or auth.
+- Basic environment settings are loaded via `.env`.
 
-## Makefile komutlari
+## Makefile commands
 
 ```bash
 make install-dev
@@ -242,7 +264,7 @@ make run
 make test
 ```
 
-Tum kontroller:
+All checks:
 
 ```bash
 make check
