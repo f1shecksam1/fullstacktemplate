@@ -2,7 +2,7 @@ import contextvars
 import logging
 import logging.config
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from .config import Settings
@@ -90,7 +90,7 @@ def _cleanup_old_logs(
     if retention_days <= 0:
         return
 
-    now = datetime.now(timezone.utc if use_utc else None)
+    now = datetime.now(UTC if use_utc else None)
     today = now.date()
 
     for file in log_dir.glob(f"{prefix}-*.log"):
